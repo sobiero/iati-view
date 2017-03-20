@@ -1,0 +1,62 @@
+<script language="JavaScript">
+		
+$(function () {
+
+	$('#form-read-iati-file').submit(function() { 
+		
+		$('#read-results').hide();
+
+		$('#btn-read').html('<i class="fa fa-spinner fa-pulse" style="font-size:1.1em;"></i> Reading...');
+
+		var options = { 
+			//target:     '#divToUpdate', 
+			//url:        'comment.php', 
+			success:    function(resp) { 
+				//alert(resp.data.org.name);
+				fillTable(resp);
+			} 
+		}; 
+
+		$(this).ajaxSubmit(options); 
+		// return false to prevent normal browser submit and page navigation 
+		return false; 
+	});
+
+
+	$("#btn-import" ).on( "click", function() {
+
+		var n_data_file_name = $('#data_file_name').val();
+		
+		$.ajax({
+		  method: "POST",
+		  url: '<?= $this->url->get("main/iati-files/import");?>',
+		  data: { iati_url: $(this).data("iati_url"), data_file_name: n_data_file_name }	
+		})
+		.done(function( resp ) {
+			importResult( resp )
+	   });
+	});
+
+});
+
+function fillTable(d)
+{
+
+	$('#btn-import').data("iati_url", d.data.iati_url);
+	
+	$('#read-results').show();
+	$('#btn-read').html('<i class="fa fa-file-text-o" aria-hidden="true"></i> Read');
+
+	$('tr.org-name td.val').text(  (d.data.org.name) );
+	$('tr.org-ref td.val').text(  (d.data.org.ref) );
+	$('tr.activities-nbr td.val').text(  d.data.activities.cnt );
+	$('tr.sectors-nbr td.val').text(  d.data.sectors );
+	$('tr.countries-nbr td.val').text( d.data.countries );
+}
+
+function importResult( resp )
+{
+
+}
+
+</script>

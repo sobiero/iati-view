@@ -1,0 +1,111 @@
+
+<div class="col-sm-12">
+
+<form class="form-horizontal" method="POST" id="form-read-iati-file">
+
+	<div class="form-group">
+	  <label for="iati_url" class="col-sm-2 col-md-2 control-label">URL to XML file: </label>
+
+	  <div class="col-sm-8 col-md-8">
+		<input class="form-control" id="iati_url" name="iati_url" 
+		placeholder="URL to XML file" type="text"
+		value="http://mirror.unhabitat.org/downloads/docs/open_unhabitat_org/UN-habitat_projects.xml"
+		>
+	  </div>
+	  
+	  <div class="col-sm-2 col-md-2">
+	  <button type="submit" class="btn btn-info pull-right" id="btn-read">
+	  <i class="fa fa-file-text-o" aria-hidden="true"></i> Read
+	  </button>
+	  </div>
+
+	</div>	
+
+</form>
+
+</div>
+
+
+
+<div class="col-sm-12" id="read-results" style="display:none;" >
+
+	<table class="table table-bordered">
+		<tbody><tr>
+		  <th style="width: 10px">#</th>
+		  <th>Variable</th>
+		  <th>Value</th>
+		  <th style="width: 40px"> </th>
+		</tr>
+		
+		<tr class="org-name">
+		  <td>1.</td>
+		  <td>Organization name</td>
+		  <td class='val'>
+			
+		  </td>
+		  <td><span class="badge bg-green">2</span></td>
+		</tr>
+
+		<tr class="org-ref">
+		  <td>2.</td>
+		  <td>Organization Ref</td>
+		  <td class='val'>
+			
+		  </td>
+		  <td><span class="badge bg-green"></span></td>
+		</tr>
+
+		<tr class="activities-nbr">
+		  <td>3.</td>
+		  <td>Number of Activities</td>
+		  <td  class='val'>
+			
+		  </td>
+		  <td><span class="badge bg-green"></span></td>
+		</tr>
+
+		<tr class="countries-nbr">
+		  <td>4.</td>
+		  <td>Number of Countries</td>
+		  <td class='val'>
+			
+		  </td>
+		  <td><span class="badge bg-green"></span></td>
+		</tr>
+
+		<tr class="sectors-nbr">
+		  <td>5.</td>
+		  <td>Number of Sectors</td>
+		  <td class='val'>
+			
+		  </td>
+		  <td><span class="badge bg-green"></span></td>
+		</tr>
+		
+	  </tbody>
+	</table>
+
+<form class="form-horizontal" method="POST" id="form-import-iati-file">
+
+	<div class="form-group">
+	  <div class='col-sm-3'></div>
+	  <label for="data_file_name" class="col-sm-2 col-md-2 control-label">Data file name </label>
+
+	  <div class="col-sm-5 col-md-5 ">
+		<input class="form-control" id="data_file_name" name="data_file_name" 
+		placeholder="Data file name" type="text"
+		>
+	  </div>
+	  
+	  <div class="col-sm-2 col-md-2">
+	  <button type="button" id="btn-import" class="btn btn-success pull-right">
+	  <i class="fa fa-cloud-download" aria-hidden="true"></i>
+		&nbsp; Import</button>
+	  </div>
+
+	</div>	
+
+</form>
+
+
+</div>

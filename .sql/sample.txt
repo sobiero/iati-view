@@ -1,0 +1,5 @@
+1	1	https://www.actionaid.org.uk/sites/default/files/IATI/AAUK_Income_2014_Appeals.xml	Appeals Income 2014	GB-CHC-27446721
+2	2	http://www.actionaid.org.uk/sites/default/files/IATI/1403611066.04.xml	Appeals, Individuals and legacies 2013	GB-CHC-274467
+3	3	http://mirror.unhabitat.org/downloads/docs/open_unhabitat_org/UN-habitat_projects.xml	UN-Habitat Activity File	41120
+4	4	https://github.com/AidData-WM/public_datasets/raw/master/iati/iati_1.04_AfghanistanAIMS_GeocodedResearchRelease.xml	AfghanistanAIMS_GeocodedResearchRelease_Level1_v1.1.1	US-501c3-522318905
+5	5	https://aidstream.org/files/xml/AmrefKenya-activities.xml	Amref Health Africa in Kenya Activity File	KE-NGCB-93175

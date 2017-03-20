@@ -1,0 +1,51 @@
+
+<script type="text/javascript">
+  	
+	$(document).ready(function() {
+  
+		var table_data = <?= $data; ?>; 
+
+		console.log(table_data);
+
+		var table_options = {       
+		  "processing": true, 
+		  "autoWidth": false, 
+		  "bSort": true, 
+		  "data": table_data,
+		  "columns": [      
+		    { "title": "Description", "data": "description"},
+		    { "title": "Created", "data": "created", "width": "125px",},
+		    { "title": "Status", "data": "status", "width": "25px",},
+		    {
+			    "title": "", 
+			    "class": "", 
+			    "targets": 1, 
+			    "width": "15px",
+			    "orderable": false,
+			    "data": "id",
+			    "defaultContent": "",
+	    		render: function ( data, type, row ) {
+			        if ( type === 'display' ) {
+			           return '<p><a href="<?=$this->url->get("reporting/report/detail/");?>'+ data +'" class="btn btn-primary btn-xs">Details</a></p>';
+			        }
+		        
+		        	return data;
+	        	},
+	        }
+		  ]
+		};
+
+		$(function() {   
+		  var projects_report_table = $('#projects-report-table').DataTable(table_options);   
+		});
+
+	});
+
+	
+	$( "#createReportButton" ).click(function() {		
+		
+		$('#create-report-modal').modal('show');
+
+	});
+
+</script>

@@ -1,0 +1,58 @@
+
+<script type="text/javascript">
+  	
+	$( ".scoreButton" ).click(function() {		
+		
+		$('#edit-scores-modal').modal('show');
+
+		var itemID = $(this).attr('itemID');
+
+		console.log(itemID);
+
+		$('#itemIdInput').val(itemID);
+
+		//retrieve item details
+		$.ajax({			
+			url: "<?= $this->url->get('reporting/report/item/'.$detailID); ?>/"+itemID,
+			type: 'GET',
+			/*data: {itemId: itemID},*/
+			success: function(report){
+				console.log(report);
+				/*$('#report-details').html(report);
+				$('#report-details').modal('show');*/
+				$('#more-info-heading').html(report);
+
+
+			},
+			error: function(){
+				console.log("error");
+			}
+		});
+
+	});
+
+
+	$("#submit-scores").click(function(event){		
+		var itemId = $('#itemIdInput').val();
+		var score = $('#scoreInput').val();
+		var comment = $('#commentsInput').val();
+		
+		$.ajax({
+            type: "POST",
+            url: "<?= $this->url->get('reporting/report/score/'.$detailID); ?>",
+            data: {'itemId':itemId, 'score':score, 'comment': comment },
+            success: function(msg){
+				console.log(msg);
+                
+                $("#edit-scores-modal").modal('hide');				
+				location.reload();
+            },
+            error: function(err){
+                //alert("failure");
+                console.log(err);
+            }
+        });
+		event.preventDefault();
+    });
+
+</script>

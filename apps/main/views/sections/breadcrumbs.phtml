@@ -1,0 +1,7 @@
+<ol class="breadcrumb">             
+  <?php if( strtolower($controller) != 'home'): ?>
+  <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+  <?php endif ?>
+  <li><a href="#"> <?= $controller ?> </a></li>
+  <li class="active"> <?= $action ?> </li>
+</ol>

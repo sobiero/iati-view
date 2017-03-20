@@ -1,0 +1,19 @@
+<li class="header">IATI IMPORTER(TPS)</li>
+<!-- Optionally, you can add icons to the links -->
+
+<li class="treeview">
+  <a href="#">
+	<i class="fa fa-building"></i>
+	<span>IATI Data Files</span>
+	<span class="pull-right-container">
+	  <!-- <i class="fa fa-angle-left pull-right"></i> -->
+	</span>
+  </a>
+  <ul class="treeview-menu">
+	<li><a href="<?php echo $this->url->get("admin/jpo/duty_station");?>"><i class="fa fa-plus"></i>Import IATI XML File</a></li>
+	<li><a href="<?php echo $this->url->get("admin/jpo/dutystation");?>"><i class="fa fa-table"></i>View Imported files</a></li>
+	
+  </ul>
+</li>
+
+<li><a href="<?php echo $this->url->get("auth/user/signout");?>"><i class="fa fa-sign-out"></i> <span>Log out</span></a></li>
