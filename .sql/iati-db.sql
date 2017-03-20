@@ -1,16 +1,16 @@
 /*
-Navicat MariaDB Data Transfer
+Navicat MySQL Data Transfer
 
-Source Server         : webserver
-Source Server Version : 100121
+Source Server         : 79.170.93.5
+Source Server Version : 50554
 Source Host           : localhost:3306
-Source Database       : usiu_mis6020
+Source Database       : simon_iati_view
 
-Target Server Type    : MariaDB
-Target Server Version : 100121
+Target Server Type    : MYSQL
+Target Server Version : 50554
 File Encoding         : 65001
 
-Date: 2017-03-20 10:25:39
+Date: 2017-03-20 17:20:10
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -22,13 +22,12 @@ DROP TABLE IF EXISTS `activities`;
 CREATE TABLE `activities` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `iatifiles_id` int(11) DEFAULT NULL,
-  `activity_iati_ref` varchar(500) CHARACTER SET latin1 DEFAULT NULL,
+  `activity_iati_ref` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `start_date` date DEFAULT NULL,
   `end_date` date DEFAULT NULL,
   `currency` varchar(3) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `sector` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
-  `title` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
-  `description` varchar(5000) CHARACTER SET latin1 DEFAULT NULL,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` varchar(5000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `iatifiles_id` (`iatifiles_id`),
   CONSTRAINT `activities_ibfk_1` FOREIGN KEY (`iatifiles_id`) REFERENCES `iatifiles` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -64,9 +63,9 @@ CREATE TABLE `activities_budget` (
 DROP TABLE IF EXISTS `activities_countries_map`;
 CREATE TABLE `activities_countries_map` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `country_iso2` varchar(2) CHARACTER SET latin1 DEFAULT NULL,
+  `country_iso2` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `activity_id` int(11) DEFAULT NULL,
-  `percentage_to_country` varchar(3) CHARACTER SET latin1 DEFAULT NULL,
+  `percentage_to_country` decimal(10,2) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `country_iso2` (`country_iso2`,`activity_id`),
   KEY `activities_countries_map_ibfk_1` (`activity_id`),
@@ -78,16 +77,35 @@ CREATE TABLE `activities_countries_map` (
 -- ----------------------------
 
 -- ----------------------------
+-- Table structure for activities_sectors_map
+-- ----------------------------
+DROP TABLE IF EXISTS `activities_sectors_map`;
+CREATE TABLE `activities_sectors_map` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `activity_id` int(11) DEFAULT NULL,
+  `sector_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `activity_id` (`activity_id`),
+  KEY `sector_id` (`sector_id`),
+  CONSTRAINT `activities_sectors_map_ibfk_2` FOREIGN KEY (`sector_id`) REFERENCES `sectors` (`id`),
+  CONSTRAINT `activities_sectors_map_ibfk_1` FOREIGN KEY (`activity_id`) REFERENCES `activities` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------
+-- Records of activities_sectors_map
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for activities_transactions
 -- ----------------------------
 DROP TABLE IF EXISTS `activities_transactions`;
 CREATE TABLE `activities_transactions` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `activity_id` int(11) DEFAULT NULL,
-  `trans_code` varchar(2) CHARACTER SET latin1 DEFAULT NULL,
-  `trans_date` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `trans_code` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `trans_date` date DEFAULT NULL,
   `trans_value` decimal(10,2) DEFAULT NULL,
-  `trans_desc` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+  `trans_desc` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `activity_id` (`activity_id`),
   CONSTRAINT `activities_transactions_ibfk_1` FOREIGN KEY (`activity_id`) REFERENCES `activities` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -378,9 +396,9 @@ DROP TABLE IF EXISTS `iatifiles`;
 CREATE TABLE `iatifiles` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `organization_id` int(11) DEFAULT NULL,
-  `iati_file_url` varchar(500) CHARACTER SET latin1 DEFAULT NULL,
+  `iati_file_url` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `data_file_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `iati_ref` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+  `iati_ref` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `org_file_map` (`organization_id`,`iati_file_url`) USING BTREE,
   CONSTRAINT `iatifiles_ibfk_1` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -396,9 +414,9 @@ CREATE TABLE `iatifiles` (
 DROP TABLE IF EXISTS `import_cache`;
 CREATE TABLE `import_cache` (
   `id` int(255) NOT NULL AUTO_INCREMENT,
-  `url` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
-  `data` longtext CHARACTER SET latin1,
-  `date_loaded` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `url` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `data` longtext COLLATE utf8mb4_unicode_ci,
+  `date_loaded` datetime DEFAULT NULL,
   `imported_flag` tinyint(4) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `url` (`url`)
@@ -414,12 +432,26 @@ CREATE TABLE `import_cache` (
 DROP TABLE IF EXISTS `organizations`;
 CREATE TABLE `organizations` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `org_name` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+  `org_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Records of organizations
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for sectors
+-- ----------------------------
+DROP TABLE IF EXISTS `sectors`;
+CREATE TABLE `sectors` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------
+-- Records of sectors
 -- ----------------------------
 
 -- ----------------------------
@@ -449,3 +481,22 @@ INSERT INTO `transaction_codes` VALUES ('8', 'QP', '8', ' Purchase of Equity', '
 INSERT INTO `transaction_codes` VALUES ('9', 'Q3', '9', ' Sale of Equity', 'Incoming funds from the sale of equity.');
 INSERT INTO `transaction_codes` VALUES ('10', 'CG', '10', ' Credit Guarantee', 'A commitment made by a funding organisation to underwrite a loan or line of credit entered into by a third party');
 INSERT INTO `transaction_codes` VALUES ('11', 'IC', '11', ' Incoming Commitment', 'A firm, written obligation from a donor or provider to provide a specified amount of funds, under particular terms and conditions, reported by a recipient for this activity');
+
+TRUNCATE TABLE activities_budget;
+TRUNCATE TABLE activities_transactions;
+TRUNCATE TABLE activities_countries_map;
+TRUNCATE TABLE activities_sectors_map;
+
+DELETE FROM sectors;
+ALTER TABLE `sectors`
+AUTO_INCREMENT=1;
+DELETE FROM activities;
+ALTER TABLE `activities`
+AUTO_INCREMENT=1;
+DELETE FROM iatifiles;
+ALTER TABLE `iatifiles`
+AUTO_INCREMENT=1;
+DELETE FROM organizations;
+ALTER TABLE `organizations`
+AUTO_INCREMENT=1;
+TRUNCATE TABLE import_cache;

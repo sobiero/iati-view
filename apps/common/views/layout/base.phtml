@@ -24,10 +24,11 @@
     <!-- Ionicons -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
     
-    <link rel="stylesheet" type="text/css" href="<?= @$this->url->get(); ?>/css/AdminLTE.min.css" />
   </head>
   <!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
   <body class="hold-transition skin-blue sidebar-mini">
+
+
 <a href="" class=""></a>
     <div class="wrapper">
 		<header class="main-header">
@@ -36,7 +37,7 @@
 			  <!-- mini logo for sidebar mini 50x50 pixels -->
 			  <span class="logo-mini"><b>IATI</b></span>
 			  <!-- logo for regular state and mobile devices -->
-			  <span class="logo-lg"><small>MIS6020</small><b> IATI</b> Viewer</span>
+			  <span class="logo-lg"><small><!-- MIS6020 --></small><b> IATI</b> Viewer</span>
 			</a>
 
 			<nav class="navbar navbar-static-top" role="navigation">
@@ -111,6 +112,15 @@
 	</div><!-- ./wrapper -->
 
 	<?php $this->assets->outputJs('js'); ?>
+
+	<script type="text/javascript">
+	<!--
+	$(function () {
+		PNotify.prototype.options.styling = "bootstrap3";
+		PNotify.prototype.options.styling = "fontawesome";
+	});
+	//-->
+	</script>
 	
 
 	<?php

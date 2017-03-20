@@ -26,6 +26,21 @@ $(function () {
 	$("#btn-import" ).on( "click", function() {
 
 		var n_data_file_name = $('#data_file_name').val();
+
+		if ((n_data_file_name.trim() ) =='' )
+		{
+			new PNotify({
+				title: 'Error',
+				type: 'error',
+				text:  'You must specify the Data file name! ',
+				icon: 'fa fa-exclamation-circle',
+				delay: 3500		
+				}
+			);
+			return false;
+		}
+		
+		$(this).html('<i class="fa fa-spinner fa-pulse" style="font-size:1.1em;"></i> Importing...');
 		
 		$.ajax({
 		  method: "POST",
@@ -45,17 +60,38 @@ function fillTable(d)
 	$('#btn-import').data("iati_url", d.data.iati_url);
 	
 	$('#read-results').show();
-	$('#btn-read').html('<i class="fa fa-file-text-o" aria-hidden="true"></i> Read');
+	$('#btn-read').html('<i class="fa fa-file-text-o" aria-hidden="true"></i> &nbsp; Read');
 
 	$('tr.org-name td.val').text(  (d.data.org.name) );
 	$('tr.org-ref td.val').text(  (d.data.org.ref) );
 	$('tr.activities-nbr td.val').text(  d.data.activities.cnt );
 	$('tr.sectors-nbr td.val').text(  d.data.sectors );
 	$('tr.countries-nbr td.val').text( d.data.countries );
+
+
+	if (d.data.org.name.trim() == '')
+	{
+		$("#btn-import" ).prop('disabled', true);
+	}
+	else
+	{
+		$("#btn-import" ).prop('disabled', false);
+	}
 }
 
 function importResult( resp )
 {
+
+	$("#btn-import" ).html('<i class="fa fa-cloud-download" aria-hidden="true"></i>&nbsp; Import');
+
+	new PNotify({
+		title: 'Success',
+		type: 'success',
+		text:  resp.msg,
+		icon: 'fa fa-check',
+		delay: 5000		
+		}
+	);
 
 }
 

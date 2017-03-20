@@ -44,12 +44,12 @@ class IatiXmlFileParser
 				$org_name = empty($org_name) ? 
 						  //(string)@$activity->{'reporting-org'}[0]
 						  preg_replace('#\R+#', '', trim((string)$activity->{'reporting-org'}[0]))
-						 : $org_name ;
+						  : $org_name ;
 
 				$org_name = empty($org_name) ? 
 						 // (string)@$activity->{'reporting-org'}->narrative
 						  preg_replace('#\R+#', '', trim((string)@$activity->{'reporting-org'}->narrative))
-						 : $org_name ;
+						  : $org_name ;
 
 				$org_ref  = (string)$activity->{'reporting-org'}['ref'];
 			
@@ -69,12 +69,10 @@ class IatiXmlFileParser
 							preg_replace('#\R+#', '', trim((string) @$activity->description->narrative))
 							: $activities[ $id ]['description'] ;	
 
-
 			//$activities[ $id ]['description'] = implode(' ', 
 			//	array_slice(explode(' ', (string) @$activity->description), 0, 20)) ."..."; 	
 			
 			$activities[ $id ]['currency']    = (string) @$activity['default-currency']; 	
-
 
 
 			$activities[ $id ]['status']   = (string) @$activity->{'activity-status'} ;	
@@ -90,7 +88,7 @@ class IatiXmlFileParser
 				$activities[ $id ]['end-date']   = (string) @$activity->{'activity-date'}[0]['iso-date'];
 			}
 
-			if ( $activities[ $id ]['start-date'] > $activities[ $id ]['end-date'])
+			if ($activities[ $id ]['start-date'] > $activities[ $id ]['end-date'])
 			{
 				$tmp = $activities[ $id ]['start-date'];
 				$activities[ $id ]['start-date'] = $activities[ $id ]['end-date'];
@@ -98,19 +96,7 @@ class IatiXmlFileParser
 			
 			}
 
-
-			$sectorVal  = trim( (string)$activity->sector ) ;
-			//$sectorVal  = empty($sectorVal) ? 'not-specified' : $sectorVal ;
-
-			$countryVal = strtoupper(trim( (string)$activity->{'recipient-country'}['code'] )) ;
-			//$countryVal = empty($countryVal) ? 'xx' : $countryVal ;
-
-			$sectors[ $sectorVal ]    = null; 
-			$countries[ $countryVal ] = null;
 			
-			
-			$activities[ $id ]['sector']      = $sectorVal; 	
-
 
 			$j = 0;
 			foreach ( $activity->budget as $budget )
@@ -119,12 +105,11 @@ class IatiXmlFileParser
 				$activities[ $id ]['budget'][$j]['period_start'] = (string)$budget->{'period-start'}['iso-date'] ;
 				$activities[ $id ]['budget'][$j]['period_end']   = (string)$budget->{'period-end'}['iso-date'] ;
 				$activities[ $id ]['budget'][$j]['value_date']   = (string)$budget->value['value-date']  ;
-				$activities[ $id ]['budget'][$j]['value']        = (float)$budget->value ;
+				$activities[ $id ]['budget'][$j]['value']        =  (float)$budget->value ;
 					
 				$j++;
 			}
 
-			
 			$j = 0;
 			foreach ( $activity->transaction as $trans )
 			{			
@@ -135,22 +120,43 @@ class IatiXmlFileParser
 					$activities[ $id ]['transactions'][$j]['description'] = (string)$trans->description ;
 					$activities[ $id ]['transactions'][$j]['date']  = (string)$trans->value['value-date'] ;
 				}
-				
+
 				$j++;
 			}
 			
 			$j = 0;
 			foreach ( $activity->{'recipient-country'} as $country )
 			{			
-				if(strlen(strtoupper(trim( (string)$country['code'] ))) == 2 )
+				
+				$countryVal = strtoupper(trim( (string)$country['code'])) ;
+				
+				if(strlen($countryVal) == 2 )
 				{
-					$activities[ $id ]['countries'][$j]['iso2']       = strtoupper(trim( (string)$country['code'] ));
-					$activities[ $id ]['countries'][$j]['percentage'] = (float)@$country['percentage'] ;
+					$activities[ $id ]['countries'][$j]['iso2']       = $countryVal ;
+					$activities[ $id ]['countries'][$j]['percentage'] = empty((string)@$country['percentage']) ? null : 
+						(double)@$country['percentage'] ;
+					
+					$countries[ $countryVal ] = null;
+
 				}
 				$j++;
 
 			}
+
+			$j = 0;
+			foreach ( $activity->sector as $sector )
+			{			
+				$sectorVal  = trim((string)$sector);
+				
+				if( !empty( $sectorVal ) )
+				{
+					$activities[ $id ]['sectors'][$j]   = $sectorVal;
+					$sectors[ $sectorVal ]   = null; 
+
+				}
+				$j++;
 			
+			}
 			
 		}
 

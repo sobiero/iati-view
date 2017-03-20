@@ -12,7 +12,7 @@ class Activities extends Model
 	public $start_date;
 	public $end_date;
 	public $currency;
-	public $sector;
+	//public $sector;
 	public $title;
 	public $description;
 
@@ -63,6 +63,27 @@ class Activities extends Model
 	
 	}
 
+
+	private static function _getSectorId($sectorTitle)
+	{
+		$record = \Iati\Main\Models\Sectors::findFirst("title = '". $sectorTitle ."'");
+
+		if (!is_object($record) )
+		{
+			$record = new \Iati\Main\Models\Sectors();
+			$record->title = $sectorTitle ;
+			$record->save();
+			$id = $record->id;
+		}
+		else
+		{
+			$id = $record->id;
+		}
+		return $id;
+	
+	}
+
+
 	private static function _getIatiFile($data, $orgId, $dataFileName)
 	{
 		$record = \Iati\Main\Models\IatiFiles::findFirst("iati_file_url = '". $data['iati_url']."'");
@@ -89,7 +110,8 @@ class Activities extends Model
 		
 		//Clear previous entries
 		self::_cleanActivitiesTransactions($fileId, $db);
-		self::_cleanActivitiesCountriesMap($fileId, $db);	
+		self::_cleanActivitiesCountriesMap($fileId, $db);
+		self::_cleanActivitiesSectorsMap($fileId, $db);		
 		self::_cleanActivitiesBudget($fileId, $db);			
 		self::_cleanActivities($fileId, $db); //Cascadind should 		
 		
@@ -102,7 +124,6 @@ class Activities extends Model
 			$record->activity_iati_ref  = $key;
 			$record->start_date         = $val['start-date'];
 			$record->end_date           = $val['end-date'];
-			$record->sector             = $val['sector'];
 			$record->title              = $val['title'];
 			$record->currency           = $val['currency'];
 			$record->description        = $val['description'];
@@ -154,6 +175,26 @@ class Activities extends Model
 				}
 			
 			}
+
+
+			foreach($val['sectors'] as $_val)
+			{
+
+				$sectorId = self::_getSectorId($_val);
+
+				$_record = \Iati\Main\Models\ActivitiesSectorsMap::
+					findFirst('activity_id = '. $record->id. " AND sector_id = " . $sectorId );
+
+				if(!is_object($_record))
+				{
+
+					$_record                    = new \Iati\Main\Models\ActivitiesSectorsMap();
+					$_record->activity_id       = $record->id;
+					$_record->sector_id         = $sectorId;
+					$_record->save();
+				}
+			
+			}
 			
 		}
 	
@@ -166,6 +207,26 @@ class Activities extends Model
 					activities_countries_map 
 				WHERE
 					activities_countries_map.activity_id IN (
+						SELECT
+							a.id
+						FROM
+							activities a
+						JOIN iatifiles i ON a.iatifiles_id = i.id
+						AND i.id = ". $fileId ."
+					)";
+
+		$db->execute($qry);
+                         
+			
+	}
+
+	private static function _cleanActivitiesSectorsMap($fileId, $db)
+	{
+		$qry = "DELETE
+				FROM
+					activities_sectors_map 
+				WHERE
+					activities_sectors_map.activity_id IN (
 						SELECT
 							a.id
 						FROM

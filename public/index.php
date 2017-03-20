@@ -135,6 +135,11 @@ class Application extends BaseApplication
                 ->addJs('plugins/slimScroll/jquery.slimscroll.min.js', true)
                 ->addJs('plugins/fastclick/fastclick.min.js', true)
                 ->addJs('plugins/jqueryForm/jquery.form.min.js', true)
+                ->addJs('plugins/pnotify/pnotify.custom.min.js', true)
+                ->addJs('plugins/leaflet/leaflet.js', true)
+                ->addJs('plugins/leaflet/esri/esri-leaflet@2.0.7.js', true)
+
+
                 ->addJs('js/demo.js', true)
             ;
             $assets
@@ -142,6 +147,10 @@ class Application extends BaseApplication
                 ->addCss('bootstrap/css/bootstrap.min.css', true, true)
                 ->addCss('css/AdminLTE.min.css', true, true)
                 ->addCss('css/skins/_all-skins.min.css', true, true)
+                ->addCss('plugins/animatecss/animate.css', true, true)
+                ->addCss('plugins/pnotify/pnotify.custom.min.css', true, true)
+                ->addCss('plugins/leaflet/leaflet.css', true, true)
+
                 ->addCss('css/custom.css', true, true)
             ;
 
