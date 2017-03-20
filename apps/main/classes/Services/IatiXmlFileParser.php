@@ -147,6 +147,8 @@ class IatiXmlFileParser
 			foreach ( $activity->sector as $sector )
 			{			
 				$sectorVal  = trim((string)$sector);
+
+				$sectorVal  = empty($sectorVal) ? trim((string)$sector->narrative) : $sectorVal ;
 				
 				if( !empty( $sectorVal ) )
 				{

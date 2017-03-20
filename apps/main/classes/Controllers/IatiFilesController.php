@@ -4,11 +4,22 @@ namespace Iati\Main\Controllers;
 
 use Iati\Common\Controllers\BaseController as Controller;
 
+use Iati\Main\Services\DataAggregator;
+
 class IatiFilesController extends Controller
 {
 
-	var $viewPath = APP_PATH . 'apps/main/views/';
+	public $viewPath;
+	public $dataAgg;
 
+	public function initialize()
+	{
+		$this->viewPath = APP_PATH . 'apps/main/views/';
+		$this->dataAgg  = new DataAggregator($this->db);
+		parent::initialize();
+	}
+
+	
 	public function readAction()
 	{
 		if ($this->request->isPost() )
@@ -69,6 +80,30 @@ class IatiFilesController extends Controller
 		}
 
 	}
+
+
+	public function tps_dashboardAction()
+	{
+		$this->view->sidebar = $this->view
+								->setParamToView('data', @$data)
+			                    ->getPartial($this->viewPath . 'sections/sidebar_tps'); 
+
+			$js[] = $this->view->getPartial($this->viewPath . 'iati-files/js_tps'); 
+			
+			$this->view->javascript = $js;
+
+					
+			$data = [ 'org_cnt'  => $this->dataAgg->getOrganizationsCount(),
+					  'actv_cnt' => $this->dataAgg->getActivitiesCount(),
+					  'ctry_cnt' => $this->dataAgg->getCountriesCount(),
+			        ];
+
+			
+			$this->view->content = $this->view	
+								->setParamToView('data', @$data)
+			                    ->getPartial($this->viewPath . 'iati-files/tps_dashboard');
+	}
+
 
 	public function testxmlAction()
 	{

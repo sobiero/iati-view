@@ -87,20 +87,13 @@
 
             <!-- Main content -->
             <section class="content">
-			<div class="row">
-				<div class = "col-md-12">
-					<div class="box box-default">
-					  
-					  <div class="box-body">
+		
 						
 						<?= $this->getContent(); ?>
 						
 						<?= @$content ?>
 						
-					  </div><!-- /.box-body -->
-					</div><!-- /.box -->
-				</div>
-            </div>
+
 			
 			</section><!-- /.content -->
       </div><!-- /.content-wrapper -->
@@ -118,7 +111,46 @@
 	$(function () {
 		PNotify.prototype.options.styling = "bootstrap3";
 		PNotify.prototype.options.styling = "fontawesome";
+
+		
 	});
+
+	function notify(resp)
+	{
+		var title, type, icon, delay = 3000;
+
+		switch (resp.code)
+		{
+			case 0:
+				title = 'Error';
+				type  = 'error';
+				icon  = 'fa fa-exclamation-circle';
+				delay = 8000;
+				break;
+			case 1:	
+				title = 'Success';
+				type  = 'success';
+				icon  = 'fa fa-check';
+				break;
+			default:
+				title = 'Notice';
+				type  = 'info';
+				icon  = 'fa fa-exclamation';
+		
+		}	
+
+
+
+		new PNotify({
+			title: title,
+			type: type,
+			text: resp.data,
+			icon: icon,
+			delay: delay	
+			}
+		);
+	}
+
 	//-->
 	</script>
 	
