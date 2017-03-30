@@ -297,3 +297,15 @@
 .ui-pnotify-icon .fa {
   font-size:1.6em;
 }
+
+#additional-info table td {
+ font-size:0.85em;
+}
+
+div.country-layer h4 {
+font-size:1.1em;
+}
+
+div.country-layer table th,  div.country-layer table td{
+font-size:0.85em;
+}

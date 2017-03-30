@@ -65,13 +65,13 @@ class IatiFilesController extends Controller
 
 				$data = \Iati\Main\Services\IatiXmlFileParser::importToDb($iatiFileUrl, $this->db, $dataFileName );
 				$this->db->commit();
-				$resp = ['status' => 'success', 'code' => 1 ,  'data' => $data ] ;
+				$resp = ['status' => 'success', 'code' => 1 ,  'data' => null, 'msg' => 'Successfully imported' ] ;
 
 			} catch (\Exception $e)
 			{
 			
 				$this->db->rollback();
-				$resp = ['status' => 'error', 'code' => 0 ,  'data' => $e->getMessage() ] ;
+				$resp = ['status' => 'error', 'code' => 0 ,  'data' => null , 'msg' => $e->getMessage()  ] ;
 
 			}
 			
@@ -89,13 +89,14 @@ class IatiFilesController extends Controller
 			                    ->getPartial($this->viewPath . 'sections/sidebar_tps'); 
 
 			$js[] = $this->view->getPartial($this->viewPath . 'iati-files/js_tps'); 
+			$js[] = $this->view->getPartial($this->viewPath . 'iati-files/js_calcs'); 
 			
 			$this->view->javascript = $js;
 
 					
-			$data = [ 'org_cnt'  => $this->dataAgg->getOrganizationsCount(),
-					  'actv_cnt' => $this->dataAgg->getActivitiesCount(),
-					  'ctry_cnt' => $this->dataAgg->getCountriesCount(),
+			$data = [
+				      'recent_iatifiles' => $this->dataAgg->getLatestActivityFiles(),
+				     
 			        ];
 
 			
@@ -103,6 +104,27 @@ class IatiFilesController extends Controller
 								->setParamToView('data', @$data)
 			                    ->getPartial($this->viewPath . 'iati-files/tps_dashboard');
 	}
+
+	public function eds_dashboardAction()
+	{
+		$this->view->sidebar = $this->view
+								->setParamToView('data', @$data)
+			                    ->getPartial($this->viewPath . 'sections/sidebar_tps'); 
+
+			$js[] = $this->view->getPartial($this->viewPath . 'iati-files/js_tps'); 
+			$js[] = $this->view->getPartial($this->viewPath . 'iati-files/js_map'); 
+			
+			$this->view->javascript = $js;
+
+					
+			$data = [];
+
+			
+			$this->view->content = $this->view	
+								->setParamToView('data', @$data)
+			                    ->getPartial($this->viewPath . 'iati-files/eds_dashboard');
+	}
+
 
 
 	public function testxmlAction()

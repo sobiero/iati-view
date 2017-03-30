@@ -56,7 +56,9 @@ class IatiXmlFileParser
 			}
 
 			$id = (string)$activity->{'iati-identifier'} ;
-		
+			$id = empty(trim($id)) ? $org_ref. '--' .$x : $id ;
+
+					
 			$activities[ $id ]['title']    = preg_replace('#\R+#', '', trim((string) @$activity->title))  ;	
 
 			$activities[ $id ]['title']    = empty($activities[ $id ]['title']) ?

@@ -1,4 +1,6 @@
 <?php
+//declare(strict_types = 1);
+
 namespace Iati;
 
 error_reporting(E_ALL);
@@ -138,7 +140,8 @@ class Application extends BaseApplication
                 ->addJs('plugins/pnotify/pnotify.custom.min.js', true)
                 ->addJs('plugins/leaflet/leaflet.js', true)
                 ->addJs('plugins/leaflet/esri/esri-leaflet@2.0.7.js', true)
-
+                ->addJs('plugins/animateNumber/jquery.animateNumber.min.js', true)
+                ->addJs('plugins/select2/select2.full.min.js', true)
 
                 ->addJs('js/demo.js', true)
             ;
@@ -150,6 +153,9 @@ class Application extends BaseApplication
                 ->addCss('plugins/animatecss/animate.css', true, true)
                 ->addCss('plugins/pnotify/pnotify.custom.min.css', true, true)
                 ->addCss('plugins/leaflet/leaflet.css', true, true)
+                ->addCss('plugins/select2/select2.css', true, true)
+                ->addCss('plugins/flags/flags16.css', true, true)
+                ->addCss('plugins/flags/flags32.css', true, true)
 
                 ->addCss('css/custom.css', true, true)
             ;

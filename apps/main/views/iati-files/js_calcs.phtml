@@ -1,0 +1,119 @@
+<script language="JavaScript">
+		
+$(function () {
+	
+	$.ajax({
+		  method: "GET",
+		  url: '<?= $this->url->get("main/api/activities_summary");?>',
+		  data: null
+		})
+		.done(function( resp ) {
+			fillCalc( resp )
+	   });
+
+
+
+
+});
+
+function fillCalc(resp)
+{
+	//console.log(resp);
+
+	$('#org_cnt').animateNumber(
+	  {
+		number: resp.data.org_cnt,
+		/*'font-size': '30px', */
+		easing: 'easeInQuad',
+	  },
+	  800
+	);
+
+	$('#actv_cnt').animateNumber(
+	  {
+		number: resp.data.actv_cnt,
+		easing: 'easeInQuad',
+	  },
+	  1000
+	);
+
+	$('#ctry_cnt').animateNumber(
+	  {
+		number: resp.data.ctry_cnt,
+		easing: 'easeInQuad',
+	  },
+	  1000
+	);
+
+	calculateTotalExpenses(resp.data.expenses);
+
+}
+
+function calculateTotalExpenses(expenses)
+{
+	var exp = 0;
+	currencies = '"XXXUSD", ';
+
+	$.each(expenses, function( i, v ) {
+	  //alert( v.currency );
+
+	currencies += '"'+ v.currency.toUpperCase() + 'USD", '
+	
+
+	});
+
+	currencies = currencies.replace(/,\s*$/, "");
+
+	var yahooFinanceUrl = 'http://query.yahooapis.com/v1/public/yql?q=select'+
+						'* from yahoo.finance.xchange where pair in ('+ currencies +
+						')&env=store://datatables.org/alltableswithkeys&format=json';
+
+	var usdExcRate = [];
+
+	var c;
+
+	$.ajax({
+		  method: "GET",
+		  url: yahooFinanceUrl,
+		  data: null
+		})
+		.done(function(  resp ) {
+			
+			//console.log( resp.query.results.rate );
+
+			$.each(resp.query.results.rate, function( i, v ) {
+			 
+				c = v.Name.substr(0, v.Name.indexOf('/')); 
+
+				console.log(  c );
+
+				usdExcRate[c] = v.Rate ;
+
+			});
+
+			$.each(expenses, function( i, v ) {
+			  //alert( v.currency );
+
+				exp += v.value * usdExcRate[v.currency.toUpperCase()];
+			
+
+			});
+
+			var number_step = $.animateNumber.numberStepFactories.separator(',');
+			$('#total_exp').animateNumber(
+			  {
+				number: exp,
+				numberStep: number_step
+			  },
+			  2000
+			);
+
+			//console.log( exp );
+	   });
+
+	
+
+}
+
+
+</script>

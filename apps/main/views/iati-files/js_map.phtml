@@ -1,0 +1,575 @@
+<script language="JavaScript">
+
+function ArrNoDupe(a) {
+    var temp = {};
+    for (var i = 0; i < a.length; i++)
+        temp[a[i]] = true;
+    var r = [];
+    for (var k in temp)
+        r.push(k);
+    return r;
+}
+
+function makeRates(resp)
+{
+ 
+    //console.log(resp);
+
+	var curs = [];
+
+	$.each( resp.data.trns, function( idx, val ) { //trns loop
+
+		$.each( val.orgs, function( idx1, val1 ) { //orgs loop
+			$.each( val1.files, function( idx2, val2 ) { //files loop
+			
+			 //console.log(val2.cur); 
+			 curs.push(val2.cur) ;
+			
+			}); // end files loop
+			
+		});
+
+	});
+
+	curs = ArrNoDupe(curs);
+	//console.log(curs);
+	setExchangeRatesToUSD(curs);
+
+}
+
+function setExchangeRatesToUSD(curs)
+{
+	//console.log(curs.length);
+
+	currencies = '"XXXUSD", ';
+
+	$.each(curs, function( i, v ) {
+	 // alert( v );
+		currencies += '"'+ v.toUpperCase() + 'USD", '
+	});
+
+	//return false;
+
+	currencies = currencies.replace(/,\s*$/, "");
+
+	var yahooFinanceUrl = 'http://query.yahooapis.com/v1/public/yql?q=select'+
+						'* from yahoo.finance.xchange where pair in ('+ currencies +
+						')&env=store://datatables.org/alltableswithkeys&format=json';
+
+	var usdExcRate  = [];
+	    cache.rates = {};
+
+	var c;
+
+	$.ajax({
+		  method: "GET",
+		  url: yahooFinanceUrl,
+		  data: null
+		})
+		.done(function(  resp ) {
+			
+			//console.log( resp.query.results.rate );
+
+			$.each(resp.query.results.rate, function( i, v ) {
+			 
+				c = v.Name.substr(0, v.Name.indexOf('/')); 
+
+				//console.log(  c );
+
+				//usdExcRate[c] = v.Rate ;
+
+				$('#data-holder').data("r-"+c, v.Rate);
+
+
+
+				cache.rates[c]= v.Rate;
+
+			});
+		});
+
+
+	//cache.rates = usdExcRate;
+
+	//console.log( cache.rates );
+}
+
+
+function loadCountriesGeoJson()
+{	
+	if(!cache.countries) {
+        cache.countries = $.getJSON('<?= $this->url->get("public/plugins/countries/countries.geo.json");?>').promise();
+    } 
+    return cache.countries.done();
+}	
+
+function getGeoJsonForCountry(geoJson, countryISO3 )
+{
+	var data = null;
+	$.each( geoJson.features, function( idx, val ) {
+		if ( val.id == countryISO3 )
+		{
+			data = val;
+			return;
+		}
+	});
+	return data;
+}
+
+$(function () {
+
+	$('#org_id').select2({	
+		tags: [],
+		multiple: true,
+		tokenSeparators: [',', ' '],
+		//minimumInputLength: 2,
+		//minimumResultsForSearch: 10,
+		ajax: {
+			url: '<?= $this->url->get("main/api/organizations");?>',
+			dataType: "json",
+			type: "GET",
+			data: function (params) {
+
+				var queryParameters = {
+					term: params.term
+				}
+				return queryParameters;
+			},
+			processResults: function (data) {
+				return {
+					results: $.map(data.data, function (item) {
+						return {
+							text: item.org_name,
+							id: item.id
+						}
+					})
+				};
+			}
+		}
+	}).on('change', function (evt) {
+// alert('opuk');
+		   $('#activity_file_id').select2('data', {id: null, text: null});
+		   $('#country_iso2').select2('data', {id: null, text: null});
+	});
+
+
+	$('#activity_file_id').select2({	
+		tags: [],
+		multiple: true,
+		tokenSeparators: [',', ' '],
+		//minimumInputLength: 2,
+		//minimumResultsForSearch: 10,
+		/*initSelection: function (element, callback) {
+
+            callback({ id: 0, text: 'All' });
+		},*/
+		ajax: {
+			url: '<?= $this->url->get("main/api/iatifiles");?>',
+			dataType: "json",
+			type: "GET",
+			data: function (params) {
+
+				var org_ids = $("#org_id").select2("val"), orgs;
+				orgs = org_ids.join(',');
+
+				var queryParameters = {
+					org: orgs
+				}
+				return queryParameters;
+			},
+			processResults: function (data) {
+				return {
+					results: $.map(data.data, function (item) {
+						return {
+							text: item.data_file_name,
+							id: item.id
+						}
+					})
+				};
+			}
+		}
+	});
+
+	$('#country_iso2').select2({	
+		tags: [],
+		multiple: true,
+		tokenSeparators: [',', ' '],
+		//minimumInputLength: 2,
+		//minimumResultsForSearch: 10,
+		ajax: {
+			url: '<?= $this->url->get("main/api/countries");?>',
+			dataType: "json",
+			type: "GET",
+			data: function (params) {
+
+
+				var activity_files = $("#activity_file_id").select2("val"), files;
+				files = activity_files.join(',');
+
+				var org_ids = $("#org_id").select2("val"), orgs;
+				orgs = org_ids.join(',');
+
+				var queryParameters = {
+					file: files,
+					org: orgs
+				}
+				return queryParameters;
+			},
+			processResults: function (data) {
+				return {
+					results: $.map(data.data, function (item) {
+						return {
+							text: item.name,
+							id: item.iso2
+						}
+					})
+				};
+			}
+		}
+	});
+
+	$('#transaction_code').select2({	
+		tags: [],
+		//multiple: true,
+		tokenSeparators: [',', ' '],
+		//minimumInputLength: 2,
+		//minimumResultsForSearch: 10,
+		ajax: {
+			url: '<?= $this->url->get("main/api/transaction_codes");?>',
+			dataType: "json",
+			type: "GET",
+			data: function (params) {
+
+
+				var activity_files = $("#activity_file_id").select2("val"), files;
+				files = activity_files.join(',');
+
+				var org_ids = $("#org_id").select2("val"), orgs;
+				orgs = org_ids.join(',');
+
+				var queryParameters = {
+					file: files,
+					org: orgs
+				}
+				return queryParameters;
+			},
+			processResults: function (data) {
+				return {
+					results: $.map(data.data, function (item) {
+						return {
+							text: item.name,
+							id: item.code
+						}
+					})
+				};
+			}
+		}
+	});
+
+	$('#btn-map-it').on('click', function (evt) {
+
+		var file = $("#activity_file_id").select2("val");
+		var org  = $("#org_id").select2("val");			
+		var iso2 = $("#country_iso2").select2("val");
+		var tcodeV = $("#transaction_code").select2("val");
+
+		//console.log(tcodeV);
+
+		if (file=="" && org=="" && iso2=="")
+		{
+			var msg={};
+			msg.code = 0;
+			msg.data = 'Please select at least one parameter',
+			notify(msg);
+
+			return false;
+		}
+
+		if ( tcodeV == null )
+		{
+			var msg={};
+			msg.code = 0;
+			msg.data = 'Please select Transaction Type',
+			notify(msg);
+
+			return false;
+		}
+
+		var fileV, orgV, ctryV ;
+		
+		fileV  = file.join(',');
+		orgV   = org.join(',');
+		ctryV  = iso2.join(',');
+
+
+		$.ajax({
+		  method: "GET",
+		  dataType: "json",
+		  url: '<?= $this->url->get("main/api/transactions");?>',
+		  data: { org: orgV, file: fileV, ctry: ctryV, tcode: tcodeV }	
+		})
+		.done(function( resp ) {
+			
+			makeRates(resp);
+
+			setTimeout(function(){ drawMap( resp ) }, 4000 );
+			
+			//drawMap( resp );
+			//alert(resp.status);
+			
+	   });
+
+	});
+
+    drawBaseMap();
+
+	});
+
+function drawBaseMap()
+{
+	if (cache.map != undefined) { cache.map.remove(); } 
+	cache.map = L.map('map').setView([20.0,10.0],2);
+
+	L.esri.tiledMapLayer({
+		url: "https://unepliveservices.unep.org/arcgis/rest/services/UNBASEMAP_FINAL/MapServer", //http://tiles1.arcgis.com/tiles/YjFlb42UYfrzfUHx/arcgis/rest/services/UNBasemapFinal2/MapServer
+		minZoom:2,
+		attribution: 'Imagery &copy; United Nations Basemap | Geocoding by ESRI'
+	}).addTo( cache.map );
+}
+
+
+function getPointInfo(data, iso2)
+{
+	var rp = [], html, exp, expUSD, cur, excr;
+	     html = '<div class="row country-layer" data-iso3="'+ data.iso3 +'" data-iso2="'+iso2+'" style="min-width:400px;">';
+		rp['fillColor'] = 'green';
+
+		html += '<h4><span class="f32"><span class="flag '+ iso2.toLowerCase() +'"></span></span>'; 
+		html += '<span class="country-name">'+ data.name +'</span></h4>';
+
+		//console.log(data);
+				
+	$.each( data.orgs, function( idx1, val1 ) { //orgs loop
+
+		html += '<h4>'+ val1.name + '</h4>';
+		
+		html += '<table class="table table-bordered">';
+
+		html += '<tr><th>Activity</th><th>Value</th><th>USD&nbsp;Equivalent</th></tr>';
+
+
+
+	    $.each( val1.files, function( idx2, val2 ) { //files loop
+		
+		exp    = parseFloat(val2.exp).toFixed(2) ;
+
+		cur = val2.cur.toUpperCase();
+
+		console.log(cur);
+		
+		excr = $('#data-holder').data("r-"+cur);
+
+
+		console.log( $('#data-holder') ); //cache.rates['USD'] 
+
+		expUSD = ( cache.rates[cur] * exp).toFixed(2) ;
+	
+		html += '<tr><td>'+val2.name+'</td><td>'+ cur + '&nbsp;'+ exp + '</td><td>'+ expUSD +'</td></tr>';
+
+
+		}); // end files loop
+		
+		html += '</table>';
+	
+	
+
+
+	}); // end orgs loop
+	
+
+	
+
+	html += '</div>';
+
+	rp['html'] = html;
+
+	return rp;
+
+}
+
+function drawMap(resp)
+{
+	$('#additional-info').empty();
+	$('#gdp-row').empty();
+	drawBaseMap();
+
+	var pointInfo, featureLayer, bounds, len, iso2, iso3;
+
+	$.when( loadCountriesGeoJson() ).then(function( countriesGeoJson  ){
+
+
+		$.each( resp.data.trns, function( iso2, val ) { //ctry loop
+
+			pointInfo = getPointInfo(val, iso2);
+			
+			countryGeoJson  = getGeoJsonForCountry( countriesGeoJson, val.iso3 );	
+			featureLayer    = L.geoJson( countryGeoJson , {
+			style: function(feature) {
+					return {color: "#ff0000", fillColor: pointInfo['fillColor'] ,
+						weight: 2, opacity: 0.8, color: 'white', 
+						dashArray: '0.6', fillOpacity: 0.8};
+			}
+			})
+			.bindPopup( pointInfo['html'], {maxWidth : 420} ).addTo( cache.map );
+
+			featureLayer.bringToFront(); 
+				
+		}); //end ctry loop
+
+		len = Object.keys(resp.data.trns).length;
+
+		if ( len == 1 )
+		{
+			bounds = featureLayer.getBounds();
+			setTimeout(function(){ fitBounds(bounds) }, 800 );
+		}
+
+
+		cache.map.on('popupopen', function(e) { 
+			
+			html = $.parseHTML(e.popup._content);
+			iso2 = $(html).data('iso2');
+			iso3 = $(html).data('iso3');
+
+			displayCountryOtherInfo(iso2, iso3);
+
+		});
+
+		cache.map.on('popupclose', function(e) { 
+			
+			$('#additional-info').empty();
+			$('#gdp-row').empty();
+
+		});
+
+
+	});	
+}
+
+function fitBounds(bounds)
+{
+	cache.map.fitBounds( bounds );
+}
+
+
+function displayCountryOtherInfo(iso2, iso3)
+{
+    $('#additional-info').empty();
+	$('#gdp-row').empty();
+	var html;
+
+	$.ajax({
+		  method: "GET",
+		  url: 'https://restcountries.eu/rest/v2/alpha/' + iso3.toLowerCase()	
+		})
+		.done(function( resp ) {
+
+			  html = 'Country information<table class="table table-bordered" cellpadding="2">';
+
+			  html += '<tr><td>Domain</td><td>' + resp.topLevelDomain[0] + '</td></tr>';
+			  html += '<tr><td>Name</td><td>' + resp.name + '</td></tr>';
+			  html += '<tr><td>Capital</td><td>' + resp.capital + '</td></tr>';
+			  html += '<tr><td>Region</td><td>' + resp.region + '</td></tr>';
+			  html += '<tr><td>Area </td><td>' + resp.area + '</td></tr>';
+			  html += '<tr><td>Pop </td><td>' + resp.population + '</td></tr>';
+			  html += '<tr><td>Time Zone </td><td>' + resp.timezones[0] + '</td></tr>';
+
+			  html += '</table>'
+
+			  $('#additional-info').append(html);
+			
+	});
+
+	$.ajax({
+		  method: "GET",
+		  dataType: 'json',
+		  url: '<?= $this->url->get("main/api/readexternal/?url=");?>http://api.worldbank.org/countries/'+ iso2.toLowerCase() +'/indicators/NY.GDP.MKTP.CD?format=json' 
+		})
+		.done(function( resp ) {
+
+		//console.log( resp[1].length );
+
+		var i = 0;
+
+		var entries = {};
+		var m = [];
+
+		/*
+		$.each( resp[1], function( iso2, val ) {
+		
+		  entries.year  = val.date;
+		  entries.value = parseFloat( parseFloat(val.value)/1000000000 );
+
+		  m[i] = entries;
+
+		  i++;
+		});
+		*/
+
+		var html ='', gdp, nowDate, nowValue, beforeValue, textColor, caretType, percentage;
+
+
+		for (x=0; x < resp[1].length ; x++ )
+		{
+			if (x === 0)
+			{
+			  html += '<div class="col-md-12 text-left">'+ resp[1][x].country.value + ' ' + resp[1][x].indicator.value + ' <em>in Billions</em> </div>';
+			}
+
+			if (x === 5) { break; }
+
+			   nowDate          = resp[1][x].date ;
+			   nowValue         = parseFloat(resp[1][x].value) ;
+			   beforeValue      = parseFloat(resp[1][x+1].value) ;
+
+			   percentage = parseInt( (nowValue - beforeValue)/beforeValue * 100 );
+			   gdp = (nowValue/1000000000).toFixed(2);
+			   
+			   if (percentage >= 0)
+			   {
+					textColor = 'text-green';
+					caretType = 'fa-caret-up';
+			   }
+			   else
+			   {
+					textColor = 'text-red';
+					caretType = 'fa-caret-down';
+			   }
+
+
+			 
+			 html +='<div class="col-sm-2 col-xs-4">';
+             html +='     <div class="description-block">';
+             html +='        <span class="description-percentage '+ textColor +'"><i class="fa '+caretType +'"></i> '+percentage+'%</span>';
+             html +='        <h5 class="description-header">'+ gdp +'</h5>';
+             html +='        <span class="description-text">'+nowDate+'</span>';
+             html +='      </div>';
+             html +='    </div>';
+
+
+		}
+
+
+	$('#gdp-row').append(html);
+
+		
+			 
+			
+	});
+
+
+
+  
+}
+
+
+</script>

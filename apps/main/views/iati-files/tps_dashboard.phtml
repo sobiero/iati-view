@@ -1,7 +1,4 @@
 <div class="row">
-
-
-
 <div class="col-md-3 col-sm-6 col-xs-12">
   <div class="info-box">
 	<span class="info-box-icon bg-green"><i class="fa fa-sitemap" aria-hidden="true"></i>
@@ -9,7 +6,7 @@
 
 	<div class="info-box-content">
 	  <span class="info-box-text">Organizations</span>
-	  <span class="info-box-number"><?= $data['org_cnt'] ?></span>
+	  <span class="info-box-number" id='org_cnt'></span>
 	</div>
 	<!-- /.info-box-content -->
   </div>
@@ -24,7 +21,7 @@
 
 	<div class="info-box-content">
 	  <span class="info-box-text">Activities</span>
-	  <span class="info-box-number"><?= $data['actv_cnt'] ?></span>
+	  <span class="info-box-number" id='actv_cnt'></span>
 	</div>
 	<!-- /.info-box-content -->
   </div>
@@ -42,7 +39,7 @@
 
 	<div class="info-box-content">
 	  <span class="info-box-text">Countries</span>
-	  <span class="info-box-number"><?= $data['ctry_cnt'] ?></span>
+	  <span class="info-box-number" id="ctry_cnt"></span>
 	</div>
 	<!-- /.info-box-content -->
   </div>
@@ -56,12 +53,94 @@
 	<span class="info-box-icon bg-yellow"><i class="fa fa-money" aria-hidden="true"></i></span>
 
 	<div class="info-box-content">
-	  <span class="info-box-text">Total Spent</span>
-	  <span class="info-box-number">2,000</span>
+	  <span class="info-box-text">Total Spent <em>(USD)</em></span>
+	  <span class="info-box-number" id='total_exp'></span>
 	</div>
 	<!-- /.info-box-content -->
   </div>
   <!-- /.info-box -->
 </div>
 <!-- /.col -->
+</div>
+
+
+<div class="row">
+
+	<div class="col-md-8">
+	<div class="box box-info">
+            <div class="box-header with-border">
+              <h3 class="box-title">Latest Orders</h3>
+
+              <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+              </div>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+              <div class="table-responsive">
+                
+              </div>
+              <!-- /.table-responsive -->
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer clearfix">
+              
+              <a href="javascript:void(0)" class="btn btn-sm btn-default btn-flat pull-right">View All Orders</a>
+            </div>
+            <!-- /.box-footer -->
+          </div>
+
+	</div>
+
+
+	<div class="col-md-4">
+
+		<div class="box box-primary">
+            <div class="box-header with-border">
+              <h3 class="box-title">Recently Added Activities Files...</h3>
+
+              <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+              </div>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+              <ul class="products-list product-list-in-box">
+
+			  <?php if ( count($data['recent_iatifiles'])  > 0 ) : ?>
+			  <?php foreach ($data['recent_iatifiles'] as $d ) : ?>
+                
+				<li class="item">
+                  <div class="product-img">
+                    <i class="ion ion-arrow-graph-up-right" style="font-size:2.3em;"></i>
+                  </div>
+                  <div class="product-info">
+                    <a href="javascript:void(0)" class="product-title"><?= $d['org_name'] ?>
+                      <span class="label label-warning pull-right"><?= $d['nbr_of_activities'] ?></span></a>
+                        <span class="product-description">
+                          <?= $d['data_file_name'] ?>
+                        </span>
+                  </div>
+                </li>
+
+				<?php endforeach ?>
+				<?php endif  ?>
+                
+                <!-- /.item -->
+              </ul>
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer text-center">
+              <a href="javascript:void(0)" class="uppercase">View All Activity Files</a>
+            </div>
+            <!-- /.box-footer -->
+          </div>
+
+	</div>
+
+
 </div>
